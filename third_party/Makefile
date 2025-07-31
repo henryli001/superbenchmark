@@ -3,7 +3,7 @@
 
 
 SB_MICRO_PATH ?= /usr/local
-MPI_HOME ?= /usr/local/mpi
+MPI_HOME ?= /usr/
 HIP_HOME ?= /opt/rocm/hip
 RCCL_HOME ?= /opt/rocm/rccl
 HPCX_HOME ?= /opt/hpcx
