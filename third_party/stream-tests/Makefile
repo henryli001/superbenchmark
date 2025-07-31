@@ -20,6 +20,10 @@ ifeq ($(ARCH), aarch64)
   CC      := gcc
   CFLAGS  := -Ofast -fopenmp -DNTIMES=200
   ALL_TARGETS += NEO2
+else
+  # x86_64 default build - need large memory model for big arrays
+  CC      := gcc
+  CFLAGS  := -Ofast -fopenmp -mcmodel=large -DNTIMES=200
 endif
 
 # AMD AOCC clang present? add ZEN3 and ZEN4
