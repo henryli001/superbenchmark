@@ -3,7 +3,7 @@
 
 
 SB_MICRO_PATH ?= /usr/local
-MPI_HOME ?= /usr/
+MPI_HOME ?= /usr/local/mpi
 HIP_HOME ?= /opt/rocm/hip
 RCCL_HOME ?= /opt/rocm/rccl
 HPCX_HOME ?= /opt/hpcx
@@ -309,8 +309,5 @@ endif
 
 # Build nvbandwidth.
 nvbandwidth: sb_micro_path
-	cd ./nvbandwidth && cmake -DCMAKE_PREFIX_PATH=/usr \
-	-DBoost_INCLUDE_DIR=/usr/include \
-  	-DBoost_LIBRARY_DIR=/usr/lib \
-  	-DBoost_PROGRAM_OPTIONS_LIBRARY=/usr/lib/libboost_program_options.so . && make && cd ..
+	cd ./nvbandwidth && cmake . && make && cd ..
 	cp -v ./nvbandwidth/nvbandwidth $(SB_MICRO_PATH)/bin
