@@ -36,7 +36,7 @@ MPlib        = $(MPdir)/lib/libmpi.so
 #
 # Add Bliss
 #
-LAdir        = /opt/AMD/amd-blis
+LAdir        = /opt/amd/amd-blis
 LAinc        = -I$(LAdir)/lib/include
 LAlib        = $(LAdir)/lib/LP64/libblis-mt.so
 #
@@ -52,10 +52,10 @@ HPL_LIBS     = $(HPLlib) $(LAlib) $(MPlib) -lm
 # Compilers and linker path + flags 
 #
 HPL_DEFS     = $(Fort_C_FLAGS) -DHPL_PROGRESS_REPORT $(HPL_INCLUDES)
-CC           = /opt/AMD/aocc-compiler-4.0.0/bin/clang
+CC           = /opt/amd/aocc-compiler-4.2.0/bin/clang
 CCNOOPT      = $(HPL_DEFS)
 CCFLAGS      = $(HPL_DEFS) -march=znver3 -fomit-frame-pointer -O3 -funroll-loops
-LINKER       = /opt/AMD/aocc-compiler-4.0.0/bin/clang
+LINKER       = /opt/amd/aocc-compiler-4.2.0/bin/clang
 LINKFLAGS    = $(CCFLAGS)
 ARCHIVER     = ar
 ARFLAGS      = r

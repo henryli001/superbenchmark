@@ -23,8 +23,8 @@ ifeq ($(ARCH), aarch64)
 endif
 
 # AMD AOCC clang present? add ZEN3 and ZEN4
-ifneq ("$(wildcard /opt/AMD/aocc-compiler-4.0.0/bin/clang)","")
-  CC      := /opt/AMD/aocc-compiler-4.0.0/bin/clang
+ifneq ("$(wildcard /opt/amd/aocc-compiler-4.2.0/bin/clang)","")
+  CC      := /opt/amd/aocc-compiler-4.2.0/bin/clang
   CFLAGS  := -Ofast -mcmodel=large -mavx2 -ffp-contract=fast -lomp -fopenmp \
              -fnt-store=aggressive -DNTIMES=10
   ALL_TARGETS += ZEN3 ZEN4
