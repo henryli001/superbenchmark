@@ -309,5 +309,6 @@ endif
 
 # Build nvbandwidth.
 nvbandwidth: sb_micro_path
-	cd ./nvbandwidth && cmake . && make && cd ..
+	cd ./nvbandwidth && cmake -DBoost_INCLUDE_DIR=$(Boost_INCLUDE_DIR) \
+  	-DBoost_LIBRARY_DIR=$(Boost_LIBRARY_DIR) . && make && cd ..
 	cp -v ./nvbandwidth/nvbandwidth $(SB_MICRO_PATH)/bin
