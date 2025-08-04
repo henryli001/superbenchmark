@@ -103,7 +103,7 @@ endif
 # The version we use is the tag v2.13.13
 cuda_nccl_tests: sb_micro_path
 ifneq (,$(wildcard nccl-tests/Makefile))
-	cd ./nccl-tests && make MPI=1 MPI_HOME=$(MPI_HOME) INCLUDES="-I/usr/include/openmpi-x86_64" -j
+	cd ./nccl-tests && make MPI=1 MPI_HOME=$(MPI_HOME) -j
 	cp -v -r ./nccl-tests/build/* $(SB_MICRO_PATH)/bin/
 endif
 
