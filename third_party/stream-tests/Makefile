@@ -30,6 +30,8 @@ ifneq ("$(wildcard /opt/AMD/aocc-compiler-4.0.0/bin/clang)","")
   ALL_TARGETS += ZEN3 ZEN4
 endif
 
+CFLAGS += -mcmodel=large
+
 # the one all: definition
 all: $(ALL_TARGETS)
 
