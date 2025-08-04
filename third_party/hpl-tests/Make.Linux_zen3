@@ -38,7 +38,7 @@ MPlib        = $(MPdir)/lib/libmpi.so
 #
 LAdir        = /opt/amd/amd-blis
 LAinc        = -I$(LAdir)/lib/include
-LAlib        = $(LAdir)/lib/LP64/libblis-mt.so
+LAlib        = $(LAdir)/lib_LP64/libblis-mt.so
 #
 # Fortran to C
 #

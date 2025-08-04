@@ -3,7 +3,7 @@
 source /opt/hpcx/hpcx-init.sh
 hpcx_load
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/amd/amd-blis/lib/LP64/:/opt/hpcx/ompi/lib/:/opt/amd/aocc-compiler-4.2.0/lib/
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/opt/amd/amd-blis/lib_LP64/:/opt/hpcx/ompi/lib/:/opt/amd/aocc-compiler-4.2.0/lib/
 
 # On the off chance OMPI_MCA is set to UCX-only, disable that
 unset OMPI_MCA_osc
