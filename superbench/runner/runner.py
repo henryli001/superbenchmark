@@ -174,16 +174,14 @@ class SuperBenchRunner():
             )
         elif mode.name == 'mpi':
             # Create a wrapper script to avoid Ansible hanging issues
-            wrapper_script = (
-                '#!/bin/bash\n'
-                'set -e\n'
+            wrapper_script_content = (
                 'env OMPI_MCA_plm_rsh_agent="ssh -i ~/id_rsa" '
                 'mpirun '
                 '-tag-output '
                 '-allow-run-as-root '
                 '{host_list} '
                 '-bind-to numa '
-                '{mca_list} {env_list} {command}\n'
+                '{mca_list} {env_list} {command}'
             ).format(
                 trace=trace_command,
                 host_list=f'-host localhost:{mode.proc_num}' if 'node_num' in mode and mode.node_num == 1 else
@@ -197,10 +195,14 @@ class SuperBenchRunner():
                 command=exec_command,
             )
             mode_command = (
-                'echo "{script}" > /tmp/mpi_wrapper.sh && '
+                'cat > /tmp/mpi_wrapper.sh << \'EOF\'\n'
+                '#!/bin/bash\n'
+                'set -e\n'
+                '{script_content}\n'
+                'EOF\n'
                 'chmod +x /tmp/mpi_wrapper.sh && '
                 'exec /tmp/mpi_wrapper.sh'
-            ).format(script=wrapper_script.replace('"', '\\"').replace('\n', '\\n'))
+            ).format(script_content=wrapper_script_content)
         else:
             logger.warning('Unknown mode %s.', mode.name)
         return mode_command.strip()
