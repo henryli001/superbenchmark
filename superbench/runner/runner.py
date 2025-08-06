@@ -173,8 +173,7 @@ class SuperBenchRunner():
                 f' superbench.benchmarks.{benchmark_name}.parameters.distributed_backend=nccl'
             )
         elif mode.name == 'mpi':
-            # Create a wrapper script to avoid Ansible hanging issues
-            wrapper_script_content = (
+            mode_command = (
                 'mpirun '
                 '-tag-output '
                 '-allow-run-as-root '
@@ -199,17 +198,6 @@ class SuperBenchRunner():
                 ),
                 command=exec_command,
             )
-            mode_command = (
-                'cat > /tmp/mpi_wrapper.sh << \'EOF\'\n'
-                '#!/bin/bash\n'
-                'set -e\n'
-                'echo "Starting MPI command at $(date)"\n'
-                '{script_content}\n'
-                'echo "MPI command completed at $(date)"\n'
-                'EOF\n'
-                'chmod +x /tmp/mpi_wrapper.sh && '
-                'exec /tmp/mpi_wrapper.sh'
-            ).format(script_content=wrapper_script_content)
         else:
             logger.warning('Unknown mode %s.', mode.name)
         return mode_command.strip()
