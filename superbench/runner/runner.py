@@ -179,6 +179,7 @@ class SuperBenchRunner():
             mode_command = (
                 'env OMPI_MCA_plm_rsh_agent="ssh -i ~/id_rsa" '
                 'mpirun '    # use default OpenMPI in image
+                '-batch '    # run in batch mode (non-interactive)
                 '-tag-output '    # tag mpi output with [jobid,rank]<stdout/stderr> prefix
                 '-allow-run-as-root '    # allow mpirun to run when executed by root user
                 '{host_list} '    # use prepared hostfile or specify nodes and launch {proc_num} processes on each node
