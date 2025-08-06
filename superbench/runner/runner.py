@@ -180,12 +180,11 @@ class SuperBenchRunner():
             mode_command = (
                 'env OMPI_MCA_plm_rsh_agent="ssh -i ~/id_rsa" '
                 'mpirun '    # use default OpenMPI in image
-                '--prtemca plm ssh '
                 '-tag-output '    # tag mpi output with [jobid,rank]<stdout/stderr> prefix
                 '-allow-run-as-root '    # allow mpirun to run when executed by root user
                 '{host_list} '    # use prepared hostfile or specify nodes and launch {proc_num} processes on each node
                 '-bind-to numa '    # bind processes to numa
-                '{mca_list} {env_list} {command}'
+                '{mca_list} {env_list} {command} < /dev/null'
             ).format(
                 trace=trace_command,
                 host_list=f'-host localhost:{mode.proc_num}' if 'node_num' in mode and mode.node_num == 1 else
