@@ -183,6 +183,13 @@ class SuperBenchRunner():
                 '--mca orte_tmpdir_base /tmp '        # Use /tmp for temporary files
                 '--mca plm_rsh_disable_qrsh 1 '      # Disable qrsh
                 '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '  # SSH options for automation
+                '--mca pml ucx '
+                '--mca btl ^vader,tcp,openib,uct '
+                '--mca opal_common_ucx_opal_mem_hooks 1 '
+                '-x UCX_VFS_THREAD_AFFINITY=n '
+                '-x UCX_ASYNC_MODE=thread '
+                '-x UCX_TLS=rc_x,ud_x,mm,shm '
+                '-x MPI_THREAD_LEVEL=MPI_THREAD_SINGLE '
                 '{host_list} '
                 '-bind-to numa '
                 '{mca_list} {env_list} {command} < /dev/null'
