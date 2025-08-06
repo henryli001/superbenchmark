@@ -195,12 +195,9 @@ class SuperBenchRunner():
                 '-x UCX_ASYNC_MODE=thread '          # Use thread-based async mode
                 '-x UCX_TLS=rc_x,ud_x,tcp,shm,self ' # Prioritize IB, fallback to TCP/SHM
                 '-x UCX_NET_DEVICES=all '            # Auto-detect all available network devices
-                '-x UCX_IB_PKEY=any '                # Default partition key
+                '-x UCX_IB_PKEY=auto '                # Default partition key
                 '-x UCX_RNDV_SCHEME=put_zcopy '      # Efficient rendezvous protocol
                 '-x UCX_MEMTYPE_CACHE=n '            # Disable memory type cache for stability
-                '-x OMPI_MCA_pml_ucx_tls=any '       # Allow UCX to choose best transport
-                '-x OMPI_MCA_pml_ucx_devices=any '   # Allow UCX to choose best devices
-                '-x OMPI_MCA_opal_common_ucx_opal_mem_hooks=1 '  # Enable memory hooks via env
                 '{host_list} '
                 '-bind-to numa '
                 '{mca_list} {env_list} {command} < /dev/null'
