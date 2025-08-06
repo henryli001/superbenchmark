@@ -179,9 +179,12 @@ class SuperBenchRunner():
                 'mpirun '
                 '-tag-output '
                 '-allow-run-as-root '
+                '--mca orte_forward_job_control 0 '  # Disable job control forwarding
+                '--mca plm_rsh_no_tree_spawn 1 '     # Disable tree spawning
+                '--mca btl_openib_warn_default_gid_prefix 0 '  # Reduce warnings
                 '{host_list} '
                 '-bind-to numa '
-                '{mca_list} {env_list} {command}'
+                '{mca_list} {env_list} {command} < /dev/null'
             ).format(
                 trace=trace_command,
                 host_list=f'-host localhost:{mode.proc_num}' if 'node_num' in mode and mode.node_num == 1 else
@@ -198,7 +201,9 @@ class SuperBenchRunner():
                 'cat > /tmp/mpi_wrapper.sh << \'EOF\'\n'
                 '#!/bin/bash\n'
                 'set -e\n'
+                'echo "Starting MPI command at $(date)"\n'
                 '{script_content}\n'
+                'echo "MPI command completed at $(date)"\n'
                 'EOF\n'
                 'chmod +x /tmp/mpi_wrapper.sh && '
                 'exec /tmp/mpi_wrapper.sh'
