@@ -177,7 +177,7 @@ class SuperBenchRunner():
                 f'--backtrace none --sample none --force-overwrite true --cpuctxsw none --trace cuda,nvtx '
             ) if enable_nsys else ''
             mode_command = (
-                '{trace} '
+                'env OMPI_MCA_plm_rsh_agent="ssh -i ~/id_rsa" '
                 'mpirun '    # use default OpenMPI in image
                 '-tag-output '    # tag mpi output with [jobid,rank]<stdout/stderr> prefix
                 '-allow-run-as-root '    # allow mpirun to run when executed by root user
