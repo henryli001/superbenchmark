@@ -173,18 +173,17 @@ class SuperBenchRunner():
                 f' superbench.benchmarks.{benchmark_name}.parameters.distributed_backend=nccl'
             )
         elif mode.name == 'mpi':
-            trace_command = (
-                f'nsys profile --output {trace_dir}/{benchmark_name}_{mode.proc_rank}_traces '
-                f'--backtrace none --sample none --force-overwrite true --cpuctxsw none --trace cuda,nvtx '
-            ) if enable_nsys else ''
-            mode_command = (
+            # Create a wrapper script to avoid Ansible hanging issues
+            wrapper_script = (
+                '#!/bin/bash\n'
+                'set -e\n'
                 'env OMPI_MCA_plm_rsh_agent="ssh -i ~/id_rsa" '
-                'mpirun '    # use default OpenMPI in image
-                '-tag-output '    # tag mpi output with [jobid,rank]<stdout/stderr> prefix
-                '-allow-run-as-root '    # allow mpirun to run when executed by root user
-                '{host_list} '    # use prepared hostfile or specify nodes and launch {proc_num} processes on each node
-                '-bind-to numa '    # bind processes to numa
-                '{mca_list} {env_list} {command} < /dev/null'
+                'mpirun '
+                '-tag-output '
+                '-allow-run-as-root '
+                '{host_list} '
+                '-bind-to numa '
+                '{mca_list} {env_list} {command}\n'
             ).format(
                 trace=trace_command,
                 host_list=f'-host localhost:{mode.proc_num}' if 'node_num' in mode and mode.node_num == 1 else
@@ -197,6 +196,11 @@ class SuperBenchRunner():
                 ),
                 command=exec_command,
             )
+            mode_command = (
+                'echo "{script}" > /tmp/mpi_wrapper.sh && '
+                'chmod +x /tmp/mpi_wrapper.sh && '
+                'exec /tmp/mpi_wrapper.sh'
+            ).format(script=wrapper_script.replace('"', '\\"').replace('\n', '\\n'))
         else:
             logger.warning('Unknown mode %s.', mode.name)
         return mode_command.strip()
