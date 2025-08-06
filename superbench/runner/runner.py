@@ -175,13 +175,15 @@ class SuperBenchRunner():
         elif mode.name == 'mpi':
             # Create a wrapper script to avoid Ansible hanging issues
             wrapper_script_content = (
-                'env OMPI_MCA_plm_rsh_agent="ssh -i ~/id_rsa" '
                 'mpirun '
                 '-tag-output '
                 '-allow-run-as-root '
                 '--mca orte_forward_job_control 0 '  # Disable job control forwarding
                 '--mca plm_rsh_no_tree_spawn 1 '     # Disable tree spawning
                 '--mca btl_openib_warn_default_gid_prefix 0 '  # Reduce warnings
+                '--mca orte_tmpdir_base /tmp '        # Use /tmp for temporary files
+                '--mca plm_rsh_disable_qrsh 1 '      # Disable qrsh
+                '--mca plm_rsh_args "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '  # SSH options for automation
                 '{host_list} '
                 '-bind-to numa '
                 '{mca_list} {env_list} {command} < /dev/null'
