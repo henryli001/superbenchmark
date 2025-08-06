@@ -183,7 +183,7 @@ class SuperBenchRunner():
                 '--mca btl_openib_warn_default_gid_prefix 0 '  # Reduce warnings
                 '--mca orte_tmpdir_base /tmp '        # Use /tmp for temporary files
                 '--mca plm_rsh_disable_qrsh 1 '      # Disable qrsh
-                '--mca plm_rsh_args "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '  # SSH options for automation
+                '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '  # SSH options for automation
                 '{host_list} '
                 '-bind-to numa '
                 '{mca_list} {env_list} {command} < /dev/null'
