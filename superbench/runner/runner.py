@@ -173,32 +173,23 @@ class SuperBenchRunner():
                 f' superbench.benchmarks.{benchmark_name}.parameters.distributed_backend=nccl'
             )
         elif mode.name == 'mpi':
-            # Primary configuration: UCX PML with proper threading and transport configuration
+            # ob1 PML configuration - stable and reliable for InfiniBand environments
             mode_command = (
                 'mpirun '
                 '-tag-output '
                 '-allow-run-as-root '
-                '--mca orte_forward_job_control 0 '  # Disable job control forwarding
-                '--mca plm_rsh_no_tree_spawn 1 '     # Disable tree spawning
-                '--mca btl_openib_warn_default_gid_prefix 0 '  # Reduce warnings
-                '--mca orte_tmpdir_base /tmp '        # Use /tmp for temporary files
-                '--mca plm_rsh_disable_qrsh 1 '      # Disable qrsh
-                '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '  # SSH options for automation
-                '--mca pml ucx '                     # Use UCX PML for performance
-                '--mca mpi_thread_multiple 0 '
-                '--mca btl ^vader,tcp,openib,uct '   # Exclude conflicting BTLs, let UCX handle transport
-                '--mca opal_common_ucx_opal_mem_hooks 1 '  # Enable UCX memory hooks
-                '--mca coll_hcoll_enable 0 '         # Disable HColl to avoid conflicts
-                '--mca opal_warn_on_missing_libcuda 0 '  # Reduce CUDA warnings
-                '--oversubscribe '                   # Allow oversubscription for single node testing
-                '-x UCX_HANDLE_ERRORS=bt '           # Better error handling
-                '-x UCX_VFS_THREAD_AFFINITY=n '      # Disable VFS thread affinity 
-                '-x UCX_ASYNC_MODE=thread '          # Use thread-based async mode
-                '-x UCX_TLS=rc_x,ud_x,tcp,shm,self ' # Prioritize IB, fallback to TCP/SHM
-                '-x UCX_NET_DEVICES=all '            # Auto-detect all available network devices
-                '-x UCX_IB_PKEY=auto '                # Default partition key
-                '-x UCX_RNDV_SCHEME=put_zcopy '      # Efficient rendezvous protocol
-                '-x UCX_MEMTYPE_CACHE=n '            # Disable memory type cache for stability
+                '--mca orte_forward_job_control 0 '
+                '--mca plm_rsh_no_tree_spawn 1 '
+                '--mca btl_openib_warn_default_gid_prefix 0 '
+                '--mca orte_tmpdir_base /tmp '
+                '--mca plm_rsh_disable_qrsh 1 '
+                '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '
+                '--mca pml ob1 '                     # Use ob1 PML for stability
+                '--mca btl ^openib '                 # Exclude openib BTL to avoid IB issues
+                '--mca btl_tcp_if_exclude lo,docker0 '
+                '--mca coll_hcoll_enable 0 '
+                '--mca opal_warn_on_missing_libcuda 0 '
+                '--oversubscribe '
                 '{host_list} '
                 '-bind-to numa '
                 '{mca_list} {env_list} {command} < /dev/null'
