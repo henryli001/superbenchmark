@@ -92,8 +92,18 @@ class SuperBenchRunner():
                             'coll_hcoll_enable': 0,
                             'orte_forward_job_control': 0,
                         }
+                    else:
+                        # Ensure UCX is used when MCA is defined but PML is not specified
+                        if 'pml' not in self._sb_benchmarks[name].modes[idx].mca:
+                            self._sb_benchmarks[name].modes[idx].mca['pml'] = 'ucx'
+                        if 'btl' not in self._sb_benchmarks[name].modes[idx].mca:
+                            self._sb_benchmarks[name].modes[idx].mca['btl'] = '^vader,tcp,openib,uct'
                     for key in ['PATH', 'LD_LIBRARY_PATH', 'SB_MICRO_PATH', 'SB_WORKSPACE']:
                         self._sb_benchmarks[name].modes[idx].env.setdefault(key, None)
+                    # Add UCX transport layer setting for InfiniBand when UCX PML is used
+                    if (hasattr(self._sb_benchmarks[name].modes[idx], 'mca') and 
+                        self._sb_benchmarks[name].modes[idx].mca.get('pml') == 'ucx'):
+                        self._sb_benchmarks[name].modes[idx].env.setdefault('UCX_TLS', 'self,sm,rc_verbs,rc_mlx5')
                     if 'pattern' in mode:
                         if mode.pattern.type == 'topo-aware' and 'ibstat' not in mode.pattern:
                             self._sb_benchmarks[name].modes[idx].pattern.ibstat = gen_ibstat(
