@@ -185,7 +185,6 @@ class SuperBenchRunner():
                 '--mca plm_rsh_disable_qrsh 1 '
                 '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '
                 '--mca pml ob1 '                     # Use ob1 PML for stability
-                '--mca btl ^openib '                 # Exclude openib BTL to avoid IB issues
                 '--mca btl_tcp_if_exclude lo,docker0 '
                 '--mca coll_hcoll_enable 0 '
                 '--mca opal_warn_on_missing_libcuda 0 '
