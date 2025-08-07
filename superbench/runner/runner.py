@@ -98,12 +98,23 @@ class SuperBenchRunner():
                             self._sb_benchmarks[name].modes[idx].mca['pml'] = 'ucx'
                         if 'btl' not in self._sb_benchmarks[name].modes[idx].mca:
                             self._sb_benchmarks[name].modes[idx].mca['btl'] = '^vader,tcp,openib,uct'
+                        # Disable problematic collective components when using UCX
+                        if self._sb_benchmarks[name].modes[idx].mca.get('pml') == 'ucx':
+                            self._sb_benchmarks[name].modes[idx].mca.setdefault('coll_hcoll_enable', 0)
+                            self._sb_benchmarks[name].modes[idx].mca.setdefault('coll_han_enable', 0)
+                            self._sb_benchmarks[name].modes[idx].mca.setdefault('coll', '^hcoll,han')
                     for key in ['PATH', 'LD_LIBRARY_PATH', 'SB_MICRO_PATH', 'SB_WORKSPACE']:
                         self._sb_benchmarks[name].modes[idx].env.setdefault(key, None)
-                    # Add UCX transport layer setting for InfiniBand when UCX PML is used
+                    # Add UCX environment variables when UCX PML is used
                     if (hasattr(self._sb_benchmarks[name].modes[idx], 'mca') and 
                         self._sb_benchmarks[name].modes[idx].mca.get('pml') == 'ucx'):
-                        self._sb_benchmarks[name].modes[idx].env.setdefault('UCX_TLS', 'self,sm,rc_verbs,rc_mlx5')
+                        ucx_env = {
+                            'UCX_TLS': 'rc_verbs,rc_mlx5,self',
+                            'UCX_NET_DEVICES': 'mlx5_0,mlx5_1',
+                            'UCX_IB_PCI_RELAXED_ORDERING': 'on',
+                        }
+                        for ucx_key, ucx_value in ucx_env.items():
+                            self._sb_benchmarks[name].modes[idx].env.setdefault(ucx_key, ucx_value)
                     if 'pattern' in mode:
                         if mode.pattern.type == 'topo-aware' and 'ibstat' not in mode.pattern:
                             self._sb_benchmarks[name].modes[idx].pattern.ibstat = gen_ibstat(
