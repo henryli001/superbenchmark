@@ -109,7 +109,6 @@ class SuperBenchRunner():
                     if (hasattr(self._sb_benchmarks[name].modes[idx], 'mca') and 
                         self._sb_benchmarks[name].modes[idx].mca.get('pml') == 'ucx'):
                         ucx_env = {
-                            'UCX_TLS': 'rc_verbs,rc_mlx5,self',
                             'UCX_IB_PCI_RELAXED_ORDERING': 'on',
                         }
                         for ucx_key, ucx_value in ucx_env.items():
