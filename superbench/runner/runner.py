@@ -185,6 +185,7 @@ class SuperBenchRunner():
                 '--mca plm_rsh_disable_qrsh 1 '      # Disable qrsh
                 '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '  # SSH options for automation
                 '--mca pml ucx '                     # Use UCX PML for performance
+                '--mca mpi_thread_multiple 0'
                 '--mca btl ^vader,tcp,openib,uct '   # Exclude conflicting BTLs, let UCX handle transport
                 '--mca opal_common_ucx_opal_mem_hooks 1 '  # Enable UCX memory hooks
                 '--mca coll_hcoll_enable 0 '         # Disable HColl to avoid conflicts
