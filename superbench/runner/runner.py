@@ -180,39 +180,11 @@ class SuperBenchRunner():
                 '-allow-run-as-root '
                 '--mca orte_forward_job_control 0 '
                 '--mca plm_rsh_no_tree_spawn 1 '
-                '--mca btl_openib_warn_default_gid_prefix 0 '
-                '--mca orte_tmpdir_base /tmp '
                 '--mca plm_rsh_disable_qrsh 1 '
                 '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '
-                '--mca pml ob1 '                     # Use ob1 PML for stability
-                '--mca btl_tcp_if_exclude lo,docker0 '
-                '--mca coll_hcoll_enable 0 '
-                '--mca opal_warn_on_missing_libcuda 0 '
-                '--oversubscribe '
                 '{host_list} '
                 '-bind-to numa '
                 '{mca_list} {env_list} {command} < /dev/null'
-            # Fallback ob1 configuration (comment out above and uncomment below if UCX still fails):
-            # mode_command = (
-            #     'mpirun '
-            #     '-tag-output '
-            #     '-allow-run-as-root '
-            #     '--mca orte_forward_job_control 0 '
-            #     '--mca plm_rsh_no_tree_spawn 1 '
-            #     '--mca btl_openib_warn_default_gid_prefix 0 '
-            #     '--mca orte_tmpdir_base /tmp '
-            #     '--mca plm_rsh_disable_qrsh 1 '
-            #     '--mca plm_rsh_args "-i ~/id_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o BatchMode=yes" '
-            #     '--mca pml ob1 '                     # Fallback to ob1 for stability
-            #     '--mca btl ^openib '                 # Exclude openib BTL
-            #     '--mca btl_tcp_if_exclude lo,docker0 '
-            #     '--mca coll_hcoll_enable 0 '
-            #     '--mca opal_warn_on_missing_libcuda 0 '
-            #     '--oversubscribe '
-            #     '{host_list} '
-            #     '-bind-to numa '
-            #     '{mca_list} {env_list} {command} < /dev/null'
-            # )
             ).format(
                 trace=trace_command,
                 host_list=f'-host localhost:{mode.proc_num}' if 'node_num' in mode and mode.node_num == 1 else
