@@ -10,9 +10,9 @@ HPCX_HOME ?= /opt/hpcx
 ROCM_PATH ?= /opt/rocm
 
 CUDA_VER ?= $(shell nvcc --version | grep 'release' | awk '{print $$6}' | cut -c2- | cut -d '.' -f1-2)
-ROCBLAS_BRANCH ?= rocm-$(shell dpkg -l | grep 'rocm-dev ' | awk '{print $$3}' | cut -d '.' -f1-3)
-HIPBLASLT_BRANCH ?= rocm-$(shell dpkg -l | grep 'rocm-dev ' | awk '{print $$3}' | cut -d '.' -f1-3)
-ROCM_VER ?= $(shell hipconfig -R | grep -oP '\d+\.\d+\.\d+' || echo "0.0.0")
+ROCBLAS_BRANCH ?= rocm-$(shell rpm -qa | grep 'rocm-dev-' | head -1 | awk -F'-' '{print $$3}' | cut -d '.' -f1-3)
+HIPBLASLT_BRANCH ?= rocm-$(shell rpm -qa | grep 'rocm-dev-' | head -1 | awk -F'-' '{print $$3}' | cut -d '.' -f1-3)
+ROCM_VER ?= $(shell rpm -qa | grep 'rocm-dev-' | head -1 | awk -F'-' '{print $$3}' | cut -d '.' -f1-3)
 
 NUM_MAKE_JOBS ?= $(shell nproc --ignore=2)
 
