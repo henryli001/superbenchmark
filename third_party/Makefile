@@ -147,8 +147,7 @@ endif
 rocm_rocblas: sb_micro_path
 	@if [ ! -e $(SB_MICRO_PATH)/bin/rocblas-bench ] && [ -z `which rocblas-bench` ]; then \
 		if [ -d rocBLAS ]; then rm -rf rocBLAS; fi; \
-		git clone -b ${ROCBLAS_BRANCH} https://github.com/ROCmSoftwarePlatform/rocBLAS.git ./rocBLAS; \
-		sed -i 's|#include "gemm.hpp"|#include "Tensile/gemm.hpp"|' rocBLAS/clients/benchmarks/../../library/src/blas3/rocblas_trtri.hpp; \
+		git clone -b lihl/rocblas-client-azl https://github.com/henryli001/rocBLAS.git ./rocBLAS; \
 		cd ./rocBLAS && ./install.sh --dependencies --clients-only; \
 		cp -v $(SB_MICRO_PATH)/third_party/rocBLAS/build/release/clients/staging/rocblas-bench $(SB_MICRO_PATH)/bin/; \
 	fi
