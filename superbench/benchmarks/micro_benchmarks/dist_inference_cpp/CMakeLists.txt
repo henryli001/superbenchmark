@@ -36,7 +36,7 @@ else()
     endif()
     
     find_package(MPI COMPONENTS CXX)
-    if(NOT MPI_CXX_FOUND AND DEFINED ENV{MPI_HOME})
+    if(NOT TARGET MPI::MPI_CXX AND DEFINED ENV{MPI_HOME})
         # Fallback: create MPI::MPI_CXX target manually
         message(STATUS "Creating MPI::MPI_CXX target manually")
         add_library(MPI::MPI_CXX INTERFACE IMPORTED)
@@ -45,7 +45,7 @@ else()
             INTERFACE_LINK_LIBRARIES "${MPI_CXX_LIBRARIES}"
         )
         include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
-    elseif(MPI_CXX_FOUND)
+    elseif(TARGET MPI::MPI_CXX)
         message(STATUS "Found MPI CXX component")
         include_directories(SYSTEM ${MPI_INCLUDE_PATH})
     else()
