@@ -5,17 +5,14 @@ cmake_minimum_required(VERSION 3.18)
 
 project(dist_inference LANGUAGES CXX)
 
+find_package(MPI REQUIRED)
+include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+
 find_package(CUDAToolkit QUIET)
 
 # Cuda environment
 if(CUDAToolkit_FOUND)
     message(STATUS "Found CUDA: " ${CUDAToolkit_VERSION})
-
-    find_package(MPI REQUIRED)
-    if(NOT TARGET MPI::MPI_CXX)
-        message(FATAL_ERROR "MPI::MPI_CXX target not available. Found MPI_CXX_FOUND: ${MPI_CXX_FOUND}")
-    endif()
-    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 
     include(../cuda_common.cmake)
     add_executable(dist_inference dist_inference.cu)
@@ -23,35 +20,6 @@ if(CUDAToolkit_FOUND)
     target_link_libraries(dist_inference MPI::MPI_CXX nccl cublasLt)
 else()
     # ROCm environment
-    # Set MPI root for ROCm case where MPI detection might be problematic
-    if(DEFINED ENV{MPI_HOME})
-        set(MPI_ROOT $ENV{MPI_HOME})
-        message(STATUS "ROCm: Using MPI_ROOT: ${MPI_ROOT}")
-        
-        # Manually set MPI paths if find_package fails
-        set(MPI_CXX_COMPILER "$ENV{MPI_HOME}/bin/mpicxx")
-        set(MPI_C_COMPILER "$ENV{MPI_HOME}/bin/mpicc")
-        set(MPI_CXX_INCLUDE_PATH "$ENV{MPI_HOME}/include")
-        set(MPI_CXX_LIBRARIES "$ENV{MPI_HOME}/lib/libmpi_cxx.so;$ENV{MPI_HOME}/lib/libmpi.so")
-    endif()
-    
-    find_package(MPI COMPONENTS CXX)
-    if(NOT TARGET MPI::MPI_CXX AND DEFINED ENV{MPI_HOME})
-        # Fallback: create MPI::MPI_CXX target manually
-        message(STATUS "Creating MPI::MPI_CXX target manually")
-        add_library(MPI::MPI_CXX INTERFACE IMPORTED)
-        set_target_properties(MPI::MPI_CXX PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${MPI_CXX_INCLUDE_PATH}"
-            INTERFACE_LINK_LIBRARIES "${MPI_CXX_LIBRARIES}"
-        )
-        include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
-    elseif(TARGET MPI::MPI_CXX)
-        message(STATUS "Found MPI CXX component")
-        include_directories(SYSTEM ${MPI_INCLUDE_PATH})
-    else()
-        message(FATAL_ERROR "Could not find MPI CXX component and no MPI_HOME specified")
-    endif()
-    
     include(../rocm_common.cmake)
     find_package(hip QUIET)
     if(hip_FOUND)
