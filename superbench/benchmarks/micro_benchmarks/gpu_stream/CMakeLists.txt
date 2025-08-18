@@ -43,9 +43,6 @@ else()
 
         # link hip device lib
         add_executable(gpu_stream gpu_stream.cpp)
-        
-        # Add CUDA include path
-        target_include_directories(gpu_stream PRIVATE $ENV{HOME}/.local/lib/python3.12/site-packages/nvidia/cuda_runtime/include)
 
         include(CheckSymbolExists)
         check_symbol_exists("hipDeviceMallocUncached" "hip/hip_runtime_api.h" HIP_UNCACHED_MEMORY)
