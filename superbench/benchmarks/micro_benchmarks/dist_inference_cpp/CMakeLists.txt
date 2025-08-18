@@ -5,14 +5,17 @@ cmake_minimum_required(VERSION 3.18)
 
 project(dist_inference LANGUAGES CXX)
 
-find_package(MPI REQUIRED)
-include_directories(SYSTEM ${MPI_INCLUDE_PATH})
-
 find_package(CUDAToolkit QUIET)
 
 # Cuda environment
 if(CUDAToolkit_FOUND)
     message(STATUS "Found CUDA: " ${CUDAToolkit_VERSION})
+
+    find_package(MPI REQUIRED)
+    if(NOT TARGET MPI::MPI_CXX)
+        message(FATAL_ERROR "MPI::MPI_CXX target not available. Found MPI_CXX_FOUND: ${MPI_CXX_FOUND}")
+    endif()
+    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
 
     include(../cuda_common.cmake)
     add_executable(dist_inference dist_inference.cu)
