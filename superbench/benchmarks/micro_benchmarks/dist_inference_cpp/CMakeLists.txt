@@ -44,8 +44,13 @@ else()
             INTERFACE_INCLUDE_DIRECTORIES "${MPI_CXX_INCLUDE_PATH}"
             INTERFACE_LINK_LIBRARIES "${MPI_CXX_LIBRARIES}"
         )
+        include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
+    elseif(MPI_CXX_FOUND)
+        message(STATUS "Found MPI CXX component")
+        include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+    else()
+        message(FATAL_ERROR "Could not find MPI CXX component and no MPI_HOME specified")
     endif()
-    include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
     
     include(../rocm_common.cmake)
     find_package(hip QUIET)
