@@ -23,7 +23,7 @@ all: cuda rocm
 # msccl: api change in cudaStreamUpdateCaptureDependencies
 cuda_with_msccl: cuda cuda_msccl
 cuda: common cuda_cutlass cuda_bandwidthTest cuda_nccl_tests cuda_perftest gpcnet cuda_gpuburn nvbandwidth
-rocm: common rocm_perftest rocm_rccl_tests rocm_rocblas rocm_bandwidthTest rocm_hipblaslt apex_rocm rocm_megatron_lm
+rocm: common rocm_perftest rocm_rccl_tests rocm_rocblas rocm_bandwidthTest
 cpu: common cpu_perftest
 common: fio cpu_stream
 
@@ -149,7 +149,7 @@ rocm_rocblas: sb_micro_path
 		if [ -d rocBLAS ]; then rm -rf rocBLAS; fi; \
 		git clone -b lihl/rocblas-client-azl https://github.com/henryli001/rocBLAS.git ./rocBLAS; \
 		cd ./rocBLAS && ./install.sh --dependencies --clients-only; \
-		cp -v $(SB_MICRO_PATH)/third_party/rocBLAS/build/release/clients/staging/rocblas-bench $(SB_MICRO_PATH)/bin/; \
+		cp -v build/release/clients/staging/rocblas-bench $(SB_MICRO_PATH)/bin/; \
 	fi
 
 # Build hipblaslt-bench.
@@ -159,9 +159,9 @@ rocm_rocblas: sb_micro_path
 rocm_hipblaslt: sb_micro_path
 	@if [ ! -e $(SB_MICRO_PATH)/bin/hipblaslt-bench ] && [ -z `which hipblaslt-bench` ]; then \
 		if [ -d hipBLASLt ]; then rm -rf hipBLASLt; fi; \
-		git clone -b ${HIPBLASLT_BRANCH} https://github.com/ROCmSoftwarePlatform/hipBLASLt.git ./hipBLASLt; \
+		git clone -b lihl/rocm-6.2.2-azl-support https://github.com/henryli001/hipBLASLt.git ./hipBLASLt; \
 		cd ./hipBLASLt && ./install.sh -dc; \
-		cp -v $(SB_MICRO_PATH)/third_party/hipBLASLt/build/release/clients/staging/hipblaslt-bench $(SB_MICRO_PATH)/bin/;  \
+		cp -v build/release/clients/staging/hipblaslt-bench $(SB_MICRO_PATH)/bin/;  \
 	fi
 
 # Build hipBusBandwidth.
