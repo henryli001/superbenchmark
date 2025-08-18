@@ -24,10 +24,25 @@ else()
     if(DEFINED ENV{MPI_HOME})
         set(MPI_ROOT $ENV{MPI_HOME})
         message(STATUS "ROCm: Using MPI_ROOT: ${MPI_ROOT}")
+        
+        # Manually set MPI paths if find_package fails
+        set(MPI_CXX_COMPILER "$ENV{MPI_HOME}/bin/mpicxx")
+        set(MPI_C_COMPILER "$ENV{MPI_HOME}/bin/mpicc")
+        set(MPI_CXX_INCLUDE_PATH "$ENV{MPI_HOME}/include")
+        set(MPI_CXX_LIBRARIES "$ENV{MPI_HOME}/lib/libmpi_cxx.so;$ENV{MPI_HOME}/lib/libmpi.so")
     endif()
     
-    find_package(MPI REQUIRED)
-    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+    find_package(MPI COMPONENTS CXX)
+    if(NOT MPI_CXX_FOUND AND DEFINED ENV{MPI_HOME})
+        # Fallback: create MPI::MPI_CXX target manually
+        message(STATUS "Creating MPI::MPI_CXX target manually")
+        add_library(MPI::MPI_CXX INTERFACE IMPORTED)
+        set_target_properties(MPI::MPI_CXX PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${MPI_CXX_INCLUDE_PATH}"
+            INTERFACE_LINK_LIBRARIES "${MPI_CXX_LIBRARIES}"
+        )
+    endif()
+    include_directories(SYSTEM ${MPI_CXX_INCLUDE_PATH})
     
     include(../rocm_common.cmake)
     find_package(hip QUIET)
