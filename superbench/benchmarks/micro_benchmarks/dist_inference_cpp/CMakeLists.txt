@@ -20,6 +20,15 @@ if(CUDAToolkit_FOUND)
     target_link_libraries(dist_inference MPI::MPI_CXX nccl cublasLt)
 else()
     # ROCm environment
+    # Set MPI root for ROCm case where MPI detection might be problematic
+    if(DEFINED ENV{MPI_HOME})
+        set(MPI_ROOT $ENV{MPI_HOME})
+        message(STATUS "ROCm: Using MPI_ROOT: ${MPI_ROOT}")
+    endif()
+    
+    find_package(MPI REQUIRED)
+    include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+    
     include(../rocm_common.cmake)
     find_package(hip QUIET)
     if(hip_FOUND)
