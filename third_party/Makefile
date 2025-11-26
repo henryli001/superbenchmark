@@ -30,7 +30,7 @@ all: cuda rocm
 # msccl: api change in cudaStreamUpdateCaptureDependencies
 cuda_with_msccl: cuda cuda_msccl
 cuda: common cuda_cutlass cuda_bandwidthTest cuda_nccl_tests cuda_perftest gpcnet cuda_gpuburn megatron_lm megatron_deepspeed nvbandwidth
-rocm: common rocm_perftest rocm_rccl_tests rocm_rocblas rocm_bandwidthTest rocm_hipblaslt megatron_deepspeed apex_rocm rocm_megatron_lm
+rocm: common rocm_perftest rocm_rccl_tests rocm_rocblas rocm_bandwidthTest
 cpu: common cpu_perftest
 common: fio cpu_stream
 
@@ -127,7 +127,7 @@ ifneq (,$(wildcard perftest/autogen.sh))
 endif
 rocm_perftest:
 ifneq (,$(wildcard perftest/autogen.sh))
-	cd perftest && ./autogen.sh && ./configure --enable-rocm --with-rocm=/opt/rocm --prefix=$(SB_MICRO_PATH) && make -j && make install
+	cd perftest && ./autogen.sh && CPPFLAGS="-I/opt/rocm/include" ./configure --enable-rocm --with-rocm=/opt/rocm --prefix=$(SB_MICRO_PATH) && make -j && make install
 endif
 cpu_perftest:
 ifneq (,$(wildcard perftest/autogen.sh))
@@ -154,10 +154,9 @@ endif
 rocm_rocblas: sb_micro_path
 	@if [ ! -e $(SB_MICRO_PATH)/bin/rocblas-bench ] && [ -z `which rocblas-bench` ]; then \
 		if [ -d rocBLAS ]; then rm -rf rocBLAS; fi; \
-		git clone -b ${ROCBLAS_BRANCH} https://github.com/ROCmSoftwarePlatform/rocBLAS.git ./rocBLAS; \
-		sed -i 's|#include "gemm.hpp"|#include "Tensile/gemm.hpp"|' rocBLAS/clients/benchmarks/../../library/src/blas3/rocblas_trtri.hpp; \
+		git clone -b lihl/rocblas-client-azl https://github.com/henryli001/rocBLAS.git ./rocBLAS; \
 		cd ./rocBLAS && ./install.sh --dependencies --clients-only; \
-		cp -v $(SB_MICRO_PATH)/third_party/rocBLAS/build/release/clients/staging/rocblas-bench $(SB_MICRO_PATH)/bin/; \
+		cp -v build/release/clients/staging/rocblas-bench $(SB_MICRO_PATH)/bin/; \
 	fi
 
 # Build hipblaslt-bench.

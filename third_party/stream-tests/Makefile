@@ -34,7 +34,7 @@ AOCC_CLANG := $(wildcard /opt/AMD/aocc-compiler-4.0.0/bin/clang)
 endif
 
 # Configure compiler if AOCC is found
-ifneq ($(AOCC_CLANG),"")
+ifneq ($(AOCC_CLANG),)
   CC      := $(AOCC_CLANG)
   CFLAGS  := -Ofast -mcmodel=large -mavx2 -ffp-contract=fast -lomp -fopenmp \
              -fnt-store=aggressive -DNTIMES=10
