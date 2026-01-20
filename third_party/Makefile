@@ -56,7 +56,7 @@ endif
 	if [ -d cutlass ]; then rm -rf cutlass; fi
 	git clone --branch v4.1.0 --depth 1 https://github.com/NVIDIA/cutlass.git && cd cutlass
 else ifeq ($(shell echo $(CUDA_VER)">=12.8" | bc -l), 1)
-	$(eval ARCHS := "90;100")
+	$(eval ARCHS := "70;75;80;86;89;90;100")
 	if [ -d cutlass ]; then rm -rf cutlass; fi
 	git clone --branch v3.9.2 --depth 1 https://github.com/NVIDIA/cutlass.git && cd cutlass
 else ifeq ($(shell echo $(CUDA_VER)">=11.8" | bc -l), 1)
