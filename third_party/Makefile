@@ -93,9 +93,9 @@ endif
 cuda_bandwidthTest: sb_micro_path
 	if [ -d cuda-samples ]; then rm -rf cuda-samples; fi
 	git clone --depth 1 -b v$(CUDA_VER) https://github.com/NVIDIA/cuda-samples.git
-# ifeq ($(shell echo $(CUDA_VER)">=12.9" | bc -l), 1)
-# 	@echo "Skip cuda-samples build for CUDA>=12.9"
-ifeq ($(shell echo $(CUDA_VER)">=12.8" | bc -l), 1)
+ifeq ($(shell echo $(CUDA_VER)">=12.9" | bc -l), 1)
+	@echo "Skip cuda-samples build for CUDA>=12.9"
+else ifeq ($(shell echo $(CUDA_VER)">=12.8" | bc -l), 1)
 	$(eval TEST_PATH := "./cuda-samples/Samples/1_Utilities/bandwidthTest")
 	cd ./$(TEST_PATH) && mkdir build && cd build && cmake .. && make
 	cp -v ./$(TEST_PATH)/build/bandwidthTest $(SB_MICRO_PATH)/bin/
@@ -154,13 +154,13 @@ endif
 rocm_rocblas: sb_micro_path
 	@if [ ! -e $(SB_MICRO_PATH)/bin/rocblas-bench ] && [ -z `which rocblas-bench` ]; then \
 		if [ -d rocBLAS ]; then rm -rf rocBLAS; fi; \
-		git clone -b ${ROCBLAS_BRANCH} https://github.com/ROCmSoftwarePlatform/rocBLAS.git ./rocBLAS; \
-		sed -i 's|#include "gemm.hpp"|#include "Tensile/gemm.hpp"|' rocBLAS/clients/benchmarks/../../library/src/blas3/rocblas_trtri.hpp; \
 		if [ "$(OS_SKU)" = "AZURELINUX" ]; then \
-			cd ./rocBLAS && git apply /home/henry/rocblas_azurelinux.patch && ./install.sh --dependencies --clients-only; \
+			git clone -b ${ROCBLAS_BRANCH} https://github.com/henryli001/rocBLAS.git ./rocBLAS; \
 		else \
-			cd ./rocBLAS && ./install.sh --dependencies --clients-only; \
+			git clone -b ${ROCBLAS_BRANCH} https://github.com/ROCmSoftwarePlatform/rocBLAS.git ./rocBLAS; \
 		fi; \
+		sed -i 's|#include "gemm.hpp"|#include "Tensile/gemm.hpp"|' rocBLAS/clients/benchmarks/../../library/src/blas3/rocblas_trtri.hpp; \
+		cd ./rocBLAS && ./install.sh --dependencies --clients-only; \
 		cp -v $(SB_MICRO_PATH)/third_party/rocBLAS/build/release/clients/staging/rocblas-bench $(SB_MICRO_PATH)/bin/; \
 	fi
 
@@ -171,12 +171,12 @@ rocm_rocblas: sb_micro_path
 rocm_hipblaslt: sb_micro_path
 	@if [ ! -e $(SB_MICRO_PATH)/bin/hipblaslt-bench ] && [ -z `which hipblaslt-bench` ]; then \
 		if [ -d hipBLASLt ]; then rm -rf hipBLASLt; fi; \
-		git clone -b ${HIPBLASLT_BRANCH} https://github.com/ROCmSoftwarePlatform/hipBLASLt.git ./hipBLASLt; \
 		if [ "$(OS_SKU)" = "AZURELINUX" ]; then \
-			cd ./hipBLASLt && git apply /home/henry/hipblaslt_azurelinux.patch && ./install.sh -dc; \
+			git clone -b ${HIPBLASLT_BRANCH} https://github.com/henryli001/hipBLASLt.git ./hipBLASLt; \
 		else \
-			cd ./hipBLASLt && ./install.sh -dc; \
+			git clone -b ${HIPBLASLT_BRANCH} https://github.com/ROCmSoftwarePlatform/hipBLASLt.git ./hipBLASLt; \
 		fi; \
+		cd ./hipBLASLt && CXXFLAGS="-Wno-overloaded-virtual" ./install.sh -dc; \
 		cp -v $(SB_MICRO_PATH)/third_party/hipBLASLt/build/release/clients/staging/hipblaslt-bench $(SB_MICRO_PATH)/bin/;  \
 	fi
 
