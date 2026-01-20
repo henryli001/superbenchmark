@@ -49,11 +49,11 @@ sb_micro_path:
 # for cuda 12.9 and later Build from commit v3.9 (3.9 release commit) for blackwell support
 cuda_cutlass:
 ifeq ($(shell echo $(CUDA_VER)">=12.9" | bc -l), 1)
-	$(eval ARCHS := "100;103")
+	$(eval ARCHS := "90;100;100;103")
 	if [ -d cutlass ]; then rm -rf cutlass; fi
 	git clone --branch v4.1.0 --depth 1 https://github.com/NVIDIA/cutlass.git && cd cutlass
 else ifeq ($(shell echo $(CUDA_VER)">=12.8" | bc -l), 1)
-	$(eval ARCHS := "90;100")
+	$(eval ARCHS := "70;75;80;86;89;90;100")
 	if [ -d cutlass ]; then rm -rf cutlass; fi
 	git clone --branch v3.9.2 --depth 1 https://github.com/NVIDIA/cutlass.git && cd cutlass
 else ifeq ($(shell echo $(CUDA_VER)">=11.8" | bc -l), 1)
@@ -93,9 +93,9 @@ endif
 cuda_bandwidthTest: sb_micro_path
 	if [ -d cuda-samples ]; then rm -rf cuda-samples; fi
 	git clone --depth 1 -b v$(CUDA_VER) https://github.com/NVIDIA/cuda-samples.git
-ifeq ($(shell echo $(CUDA_VER)">=12.9" | bc -l), 1)
-	@echo "Skip cuda-samples build for CUDA>=12.9"
-else ifeq ($(shell echo $(CUDA_VER)">=12.8" | bc -l), 1)
+# ifeq ($(shell echo $(CUDA_VER)">=12.9" | bc -l), 1)
+# 	@echo "Skip cuda-samples build for CUDA>=12.9"
+ifeq ($(shell echo $(CUDA_VER)">=12.8" | bc -l), 1)
 	$(eval TEST_PATH := "./cuda-samples/Samples/1_Utilities/bandwidthTest")
 	cd ./$(TEST_PATH) && mkdir build && cd build && cmake .. && make
 	cp -v ./$(TEST_PATH)/build/bandwidthTest $(SB_MICRO_PATH)/bin/
