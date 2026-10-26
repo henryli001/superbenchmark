@@ -46,12 +46,14 @@ sb_micro_path:
 	mkdir -p $(SB_MICRO_PATH)/lib
 
 # Build cutlass.
-# for cuda 12.9 and later Build from commit v3.9 (3.9 release commit) for blackwell support
+# Use v4.1.0 for CUDA 12.9+ and v3.9.2 for CUDA 12.8.
 cuda_cutlass:
 ifeq ($(shell echo $(CUDA_VER)">=12.9" | bc -l), 1)
 	$(eval ARCHS := "100;103")
 ifeq ($(shell echo $(CUDA_VER)">=13.4" | bc -l), 1)
-	$(eval ARCHS := "100;103;107")
+	$(eval ARCHS := "80;90;100;103")
+else ifeq ($(shell echo $(CUDA_VER)"<13.0" | bc -l), 1)
+	$(eval ARCHS := "70;75")
 endif
 	if [ -d cutlass ]; then rm -rf cutlass; fi
 	git clone --branch v4.1.0 --depth 1 https://github.com/NVIDIA/cutlass.git && cd cutlass
@@ -129,6 +131,11 @@ ifeq ($(shell echo $(CUDA_VER)">=13.4" | bc -l), 1)
 		-gencode=arch=compute_107,code=sm_107 \
 		-gencode=arch=compute_120,code=sm_120 \
 		-gencode=arch=compute_120,code=compute_120" -j
+else ifeq ($(CUDA_VER),12.9)
+# Override the SM80+ defaults to support V100 and T4.
+	cd ./nccl-tests && make MPI=1 MPI_HOME=$(MPI_HOME) \
+		NVCC_GENCODE="-gencode=arch=compute_70,code=sm_70 \
+		-gencode=arch=compute_75,code=sm_75" -j
 else
 	cd ./nccl-tests && make MPI=1 MPI_HOME=$(MPI_HOME) -j
 endif
@@ -211,9 +218,10 @@ rocm_hipblaslt: sb_micro_path
 # Build hipBusBandwidth.
 # HIP is released with rocm, like rocm-4.2.0 and so on.
 # The version we use is the released tag which is consistent with the rocm version in the environment or docker.
-
+# Legacy samples need an explicit assert header when built with newer ROCm headers.
 rocm_bandwidthTest: sb_micro_path
 	git clone -b ${ROCM_VER} https://github.com/ROCm-Developer-Tools/HIP.git
+	sed -i '1i#include <cassert>' ./HIP/samples/1_Utils/hipBusBandwidth/hipBusBandwidth.cpp
 	cd ./HIP/samples/1_Utils/hipBusBandwidth/ && mkdir -p build && cd build && cmake .. && make
 	cp -v ./HIP/samples/1_Utils/hipBusBandwidth/build/hipBusBandwidth $(SB_MICRO_PATH)/bin/
 
