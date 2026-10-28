@@ -50,7 +50,7 @@ sb_micro_path:
 cuda_cutlass:
 ifeq ($(shell echo $(CUDA_VER)">=12.9" | bc -l), 1)
 	$(eval ARCHS := "100;103")
-ifeq ($(shell echo $(CUDA_VER)">=13.4" | bc -l), 1)
+ifeq ($(shell echo $(CUDA_VER)">=13.0" | bc -l), 1)
 	$(eval ARCHS := "80;90;100;103")
 else ifeq ($(shell echo $(CUDA_VER)"<13.0" | bc -l), 1)
 	$(eval ARCHS := "70;75")
