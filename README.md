@@ -19,6 +19,20 @@ __SuperBench__ is a validation and profiling tool for AI infrastructure.
 
 ## _Check [aka.ms/superbench](https://aka.ms/superbench) for more details._
 
+## ROCm source builds
+
+Set `AMDGPU_TARGETS` to the space-separated GPU architectures required by the
+build, for example `gfx942` for MI300X or `gfx908 gfx90a gfx942` for multiple
+architectures. The [third-party build](third_party/Makefile) forwards these to
+RCCL-tests through its native `GPU_TARGETS` option while preserving its compiler
+and MPI flags. Set explicit targets rather than relying on the submodule's
+ROCm-version-dependent defaults.
+
+When changing GPU targets or MPI toolchains, use a fresh RCCL-tests `BUILDDIR`
+or clean only its existing build before rebuilding. Make does not automatically
+invalidate compiled objects when command-line flags change; other completed
+third-party builds do not need to be discarded.
+
 ## Citations
 
 To cite SuperBench in your publications:

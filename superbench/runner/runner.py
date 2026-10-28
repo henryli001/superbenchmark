@@ -236,7 +236,7 @@ class SuperBenchRunner():
                 '-tag-output '    # tag mpi output with [jobid,rank]<stdout/stderr> prefix
                 '-allow-run-as-root '    # allow mpirun to run when executed by root user
                 '{host_list} '    # use prepared hostfile or specify nodes and launch {proc_num} processes on each node
-                '-bind-to numa '    # bind processes to numa
+                '--bind-to numa '    # bind processes to numa
                 '{mca_list} {env_list} {command}'
             ).format(
                 trace=trace_command,
